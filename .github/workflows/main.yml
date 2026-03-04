@@ -1,52 +1,33 @@
-name: CI to Docker Hub
+name: Build image(s)
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ "*" ]
-    tags: [ "*" ]
-  pull_request:
-    branches: [ master ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+env:
+  IMAGE_TAG: ghcr.io/emneo-dev/moodle
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  # This workflow contains a single job called "build"
+permissions:
+  packages: write
+  contents: read
+
+jobs: 
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
+    steps: 
+      - uses: actions/checkout@v4
+      - uses: docker/metadata-action@v5
+        id: image-metadata
+        with: 
+          images: ${{ env.IMAGE_TAG }}
+          tags: |
+            type=raw,value=amd64
+      - uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Set tag
-        id: tag
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v6
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v5
         with:
-          platforms: linux/amd64,linux/arm64
-          context: ./
-          file: ./Dockerfile
           push: true
-          tags: lthub/moodle:${{ steps.tag.outputs.tag }}
-
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+          platforms: linux/amd64
+          tags: ${{ steps.image-metadata.outputs.tags }}
