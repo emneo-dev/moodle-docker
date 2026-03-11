@@ -12,27 +12,28 @@ ENV PHP_MAX_INPUT_VARS=6000
 # All moodle documented required extensions + pgsql
 # https://docs.moodle.org/401/en/PHP
 # xmlrpc is unmaintained: https://php.watch/versions/8.0/xmlrpc
-# iconv doesn't compile (might be included in the base image)
-# openssl doesn't compile
-# tokenizer doesn't compile
-# spl doesn't compile
+# already included:
+#   mbstring
+#   curl
+#   iconv
+#   openssl
+#   tokenizer
+#   spl
+#   ctype
+#   simplexml
+#   pcre
+#   dom
+#   xml
+#   json
 RUN apk update --no-cache \
     && apk add --no-cache nginx supervisor \
-    && apk add --no-cache oniguruma-dev curl-dev libxml2-dev libzip-dev libpng-dev --virtual .build-deps \
+    && apk add --no-cache libxml2-dev libzip-dev libpng-dev --virtual .build-deps \
     && apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \
     && docker-php-ext-install -j$(nproc) \
-        mbstring \
-        curl \
         soap \
-        ctype \
         zip \
         gd \
-        simplexml \
-        pcre \
-        dom \
-        xml \
         intl \
-        json \
         pgsql \
     && apk del .phpize-deps \
     && pecl install xmlrpc \
