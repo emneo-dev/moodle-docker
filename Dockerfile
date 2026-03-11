@@ -15,7 +15,7 @@ ENV PHP_MAX_INPUT_VARS=6000
 # iconv doesn't compile (might be included in the base image)
 RUN apk update --no-cache \
     && apk add --no-cache nginx supervisor \
-    && apk add --no-cache oniguruma-dev curl-dev --virtual .build-deps
+    && apk add --no-cache oniguruma-dev curl-dev --virtual .build-deps \
     && docker-php-ext-install -j$(nproc) \
         mbstring \
         curl \
