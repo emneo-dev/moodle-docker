@@ -12,10 +12,10 @@ ENV PHP_MAX_INPUT_VARS=6000
 # All moodle documented required extensions + pgsql
 # https://docs.moodle.org/401/en/PHP
 # xmlrpc is unmaintained: https://php.watch/versions/8.0/xmlrpc
+# iconv doesn't compile (might be included in the base image)
 RUN apk update --no-cache \
     && apk add --no-cache nginx supervisor \
     && docker-php-ext-install -j$(nproc) \
-        iconv \
         mbstring \
         curl \
         openssl \
