@@ -14,19 +14,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps: 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: docker/metadata-action@v5
         id: image-metadata
         with: 
           images: ${{ env.IMAGE_TAG }}
           tags: |
             type=raw,value=amd64
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v7
         with:
           push: true
           platforms: linux/amd64
@@ -36,8 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ build ]
     steps: 
-      - uses: actions/checkout@v4
-      - uses: docker/login-action@v3
+      - uses: actions/checkout@v6
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
