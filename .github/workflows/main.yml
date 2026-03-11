@@ -31,3 +31,17 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: ${{ steps.image-metadata.outputs.tags }}
+
+  merge:
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    steps: 
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          docker buildx imagetools create \
+            --tag ${{ env.IMAGE_TAG }}:latest ${{ env.IMAGE_TAG }}:amd64
