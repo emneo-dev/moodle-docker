@@ -27,7 +27,7 @@ ENV PHP_MAX_INPUT_VARS=6000
 #   json
 RUN apk update --no-cache \
     && apk add --no-cache nginx supervisor \
-    && apk add --no-cache libxml2-dev libzip-dev libpng-dev icu-dev --virtual .build-deps \
+    && apk add --no-cache libxml2-dev libzip-dev libpng-dev icu-dev libpq-dev --virtual .build-deps \
     && apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \
     && docker-php-ext-install -j$(nproc) \
         soap \
