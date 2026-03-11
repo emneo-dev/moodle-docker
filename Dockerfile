@@ -10,7 +10,7 @@ ENV PHP_MAX_INPUT_VARS=6000
 # All moodle documented required extensions + pgsql
 # https://docs.moodle.org/401/en/PHP
 RUN apk update --no-cache \
-    && apk add --no-cache nginx supervisord \
+    && apk add --no-cache nginx supervisor \
     && docker-php-ext-intall -j$(nproc) \
         iconv \
         mbstring \
