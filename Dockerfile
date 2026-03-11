@@ -17,7 +17,7 @@ ENV PHP_MAX_INPUT_VARS=6000
 # tokenizer doesn't compile
 RUN apk update --no-cache \
     && apk add --no-cache nginx supervisor \
-    && apk add --no-cache oniguruma-dev curl-dev libxml2-dev --virtual .build-deps \
+    && apk add --no-cache oniguruma-dev curl-dev libxml2-dev libzip-dev --virtual .build-deps \
     && apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \
     && docker-php-ext-install -j$(nproc) \
         mbstring \
