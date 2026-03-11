@@ -13,7 +13,8 @@ ENV PHP_MAX_INPUT_VARS=6000
 # https://docs.moodle.org/401/en/PHP
 # xmlrpc is unmaintained: https://php.watch/versions/8.0/xmlrpc
 # iconv doesn't compile (might be included in the base image)
-# openssl doesn't compile (I love php)
+# openssl doesn't compile
+# tokenizer doesn't compile
 RUN apk update --no-cache \
     && apk add --no-cache nginx supervisor \
     && apk add --no-cache oniguruma-dev curl-dev --virtual .build-deps \
@@ -21,7 +22,6 @@ RUN apk update --no-cache \
     && docker-php-ext-install -j$(nproc) \
         mbstring \
         curl \
-        tokenizer \
         soap \
         ctype \
         zip \
