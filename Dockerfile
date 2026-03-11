@@ -15,6 +15,7 @@ ENV PHP_MAX_INPUT_VARS=6000
 # iconv doesn't compile (might be included in the base image)
 # openssl doesn't compile
 # tokenizer doesn't compile
+# spl doesn't compile
 RUN apk update --no-cache \
     && apk add --no-cache nginx supervisor \
     && apk add --no-cache oniguruma-dev curl-dev libxml2-dev libzip-dev libpng-dev --virtual .build-deps \
@@ -27,7 +28,6 @@ RUN apk update --no-cache \
         zip \
         gd \
         simplexml \
-        spl \
         pcre \
         dom \
         xml \
