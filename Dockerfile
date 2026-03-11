@@ -16,6 +16,7 @@ ENV PHP_MAX_INPUT_VARS=6000
 RUN apk update --no-cache \
     && apk add --no-cache nginx supervisor \
     && apk add --no-cache oniguruma-dev curl-dev --virtual .build-deps \
+    && apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \
     && docker-php-ext-install -j$(nproc) \
         mbstring \
         curl \
@@ -33,6 +34,7 @@ RUN apk update --no-cache \
         intl \
         json \
         pgsql \
+    && apk del .phpize-deps \
     && pecl install xmlrpc \
     && docker-php-ext-enable xpmrpc \
     && apk del --no-network .build-deps \
