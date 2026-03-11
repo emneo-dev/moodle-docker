@@ -14,7 +14,8 @@ ENV PHP_MAX_INPUT_VARS=6000
 # xmlrpc is unmaintained: https://php.watch/versions/8.0/xmlrpc
 # iconv doesn't compile (might be included in the base image)
 RUN apk update --no-cache \
-    && apk add --no-cache nginx supervisor oniguruma-dev \
+    && apk add --no-cache nginx supervisor \
+    && apk add --no-cache oniguruma-dev curl-dev --virtual .build-deps
     && docker-php-ext-install -j$(nproc) \
         mbstring \
         curl \
@@ -34,6 +35,7 @@ RUN apk update --no-cache \
         pgsql \
     && pecl install xmlrpc \
     && docker-php-ext-enable xpmrpc \
+    && apk del --no-network .build-deps \
     && curl -L https://github.com/moodle/moodle/archive/v${MOODLE_VERSION}.tar.gz | tar xz --strip=1 \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && mkdir -p /moodledata /var/local/cache \
