@@ -14,7 +14,7 @@ ENV PHP_MAX_INPUT_VARS=6000
 # xmlrpc is unmaintained: https://php.watch/versions/8.0/xmlrpc
 # iconv doesn't compile (might be included in the base image)
 RUN apk update --no-cache \
-    && apk add --no-cache nginx supervisor \
+    && apk add --no-cache nginx supervisor oniguruma \
     && docker-php-ext-install -j$(nproc) \
         mbstring \
         curl \
