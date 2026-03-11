@@ -7,8 +7,11 @@ ENV PHP_MEMORY_LIMIT=128M
 ENV PHP_MAX_EXECUTION_TIME=30
 ENV PHP_MAX_INPUT_VARS=6000
 
+# Might want to look at compiling php from source: https://docs.moodle.org/401/en/Compiling_PHP_from_source
+
 # All moodle documented required extensions + pgsql
 # https://docs.moodle.org/401/en/PHP
+# xmlrpc is unmaintained: https://php.watch/versions/8.0/xmlrpc
 RUN apk update --no-cache \
     && apk add --no-cache nginx supervisor \
     && docker-php-ext-install -j$(nproc) \
@@ -17,7 +20,6 @@ RUN apk update --no-cache \
         curl \
         openssl \
         tokenizer \
-        xmlrpc \
         soap \
         ctype \
         zip \
@@ -30,6 +32,8 @@ RUN apk update --no-cache \
         intl \
         json \
         pgsql \
+    && pecl install xmlrpc \
+    && docker-php-ext-enable xpmrpc \
     && curl -L https://github.com/moodle/moodle/archive/v${MOODLE_VERSION}.tar.gz | tar xz --strip=1 \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && mkdir -p /moodledata /var/local/cache \
