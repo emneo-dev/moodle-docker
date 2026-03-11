@@ -12,6 +12,7 @@ ENV PHP_MAX_INPUT_VARS=6000
 # All moodle documented required extensions + pgsql
 # https://docs.moodle.org/401/en/PHP
 # xmlrpc is unmaintained: https://php.watch/versions/8.0/xmlrpc
+# it's also very much ass to install, so let's do without for now
 # already included:
 #   mbstring
 #   curl
@@ -35,9 +36,7 @@ RUN apk update --no-cache \
         gd \
         intl \
         pgsql \
-    && apk del .phpize-deps \
-    && pecl install xmlrpc \
-    && docker-php-ext-enable xpmrpc \
+    && apk del --no-network .phpize-deps \
     && apk del --no-network .build-deps \
     && curl -L https://github.com/moodle/moodle/archive/v${MOODLE_VERSION}.tar.gz | tar xz --strip=1 \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
