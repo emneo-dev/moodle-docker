@@ -35,8 +35,9 @@ RUN apk update --no-cache \
         gd \
         intl \
         pgsql \
-    && apk del --no-network .build-deps \
-    && curl -L https://github.com/moodle/moodle/archive/v${MOODLE_VERSION}.tar.gz | tar xz --strip=1 \
+    && apk del --no-network .build-deps
+
+RUN curl -L https://github.com/moodle/moodle/archive/v${MOODLE_VERSION}.tar.gz | tar xz --strip=1 \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && mkdir -p /moodledata /var/local/cache \
     && chown -R www-data /moodledata
