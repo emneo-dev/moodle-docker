@@ -29,14 +29,12 @@ ENV PHP_MAX_INPUT_VARS=6000
 RUN apk update --no-cache \
     && apk add --no-cache nginx supervisor \
     && apk add --no-cache libxml2-dev libzip-dev libpng-dev icu-dev libpq-dev --virtual .build-deps \
-    && apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \
     && docker-php-ext-install -j$(nproc) \
         soap \
         zip \
         gd \
         intl \
         pgsql \
-    && apk del --no-network .phpize-deps \
     && apk del --no-network .build-deps \
     && curl -L https://github.com/moodle/moodle/archive/v${MOODLE_VERSION}.tar.gz | tar xz --strip=1 \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
