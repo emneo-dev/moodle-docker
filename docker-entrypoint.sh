@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -e
+set -ex
 
 : ${MOODLE_SITE_FULLNAME:=Moodle}
 : ${MOODLE_SITE_SHORTNAME:=Moodle}
@@ -39,7 +39,7 @@ if [ -z "$MOODLE_DB_PORT" ]; then
 fi
 
 # Wait for the DB to come up
-while [ `/bin/nc -w 1 $MOODLE_DB_HOST $MOODLE_DB_PORT < /dev/null > /dev/null; echo $?` != 0 ]; do
+while [ `nc -w 1 $MOODLE_DB_HOST $MOODLE_DB_PORT < /dev/null > /dev/null; echo $?` != 0 ]; do
     echo "Waiting for $MOODLE_DB_TYPE database to come up at $MOODLE_DB_HOST:$MOODLE_DB_PORT..."
     sleep 1
 done
@@ -54,36 +54,38 @@ if [ ! -d "$MOODLE_SHARED" ]; then
     echo "Created $MOODLE_SHARED directory."
     mkdir -p $MOODLE_SHARED
 fi
+chown -R www-data:www-data /moodledata
+chown -R www-data:www-data /var/local/cache
 
 # Install database if installed file doesn't exist
 if [ ! -e "$MOODLE_SHARED/installed" -a ! -f "$MOODLE_SHARED/install.lock" ]; then
     echo "Moodle database is not initialized. Initializing..."
     touch $MOODLE_SHARED/install.lock
-    sudo -E -u www-data php admin/cli/install_database.php \
+    php admin/cli/install_database.php \
         --agree-license \
-        --lang "$MOODLE_SITE_LANG" \
+        --lang="$MOODLE_SITE_LANG" \
         --adminuser=$MOODLE_ADMIN_USER \
         --adminpass=$MOODLE_ADMIN_PASS \
         --adminemail=$MOODLE_ADMIN_EMAIL \
         --fullname="$MOODLE_SITE_FULLNAME" \
         --shortname="$MOODLE_SITE_SHORTNAME"
     if [ -n $SMTP_HOST ]; then
-        sudo -E -u www-data php admin/cli/cfg.php --name=smtphosts --set=$SMTP_HOST
+        php admin/cli/cfg.php --name=smtphosts --set=$SMTP_HOST
     fi
     if [ -n $SMTP_USER ]; then
-        sudo -E -u www-data php admin/cli/cfg.php --name=smtpuser --set=$SMTP_USER
+        php admin/cli/cfg.php --name=smtpuser --set=$SMTP_USER
     fi
     if [ -n $SMTP_PASS ]; then
-        sudo -E -u www-data php admin/cli/cfg.php --name=smtppass --set=$SMTP_PASS
+        php admin/cli/cfg.php --name=smtppass --set=$SMTP_PASS
     fi
     if [ -n $SMTP_SECURITY ]; then
-        sudo -E -u www-data php admin/cli/cfg.php --name=smtpsecure --set=$SMTP_SECURITY
+        php admin/cli/cfg.php --name=smtpsecure --set=$SMTP_SECURITY
     fi
     if [ -n $SMTP_AUTH_TYPE ]; then
-        sudo -E -u www-data php admin/cli/cfg.php --name=smtpauthtype --set=$SMTP_AUTH_TYPE
+        php admin/cli/cfg.php --name=smtpauthtype --set=$SMTP_AUTH_TYPE
     fi
     if [ -n $MOODLE_NOREPLY_ADDRESS ]; then
-        sudo -E -u www-data php admin/cli/cfg.php --name=noreplyaddress --set=$MOODLE_NOREPLY_ADDRESS
+        php admin/cli/cfg.php --name=noreplyaddress --set=$MOODLE_NOREPLY_ADDRESS
     fi
 
     touch $MOODLE_SHARED/installed

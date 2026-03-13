@@ -1,37 +1,29 @@
-version: '2'
 services:
   db:
-    image: mariadb:10.4
+    image: postgres:16-alpine
     environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=moodle
-      - MYSQL_USER=moodle
-      - MYSQL_PASSWORD=password
+      - POSTGRES_DB=moodle
+      - POSTGRES_USER=moodle
+      - POSTGRES_PASSWORD=password
     volumes:
-      - ./.data/db:/var/lib/mysql
+      - ./.data/db:/var/lib/postgresql/data
     ports:
-      - 3306:3306
+      - 5432:5432
   web:
-    image: lthub/moodle
+    image: ghcr.io/emneo-dev/moodle:latest
     build: .
     ports:
       - 8080:80
-    # use the links section if you want to use a container for a database.
-    # if not, and you want to use an external database server, configure
-    # if with the environment variables in the 'environment' section.
-    # see README.md for more details.
+    security_opt:
+      - label=disable
     links:
       - db
-    # uncomment the 'volumes' section to enable a shared volume with docker-compose
     volumes:
       - ./.data/web:/moodledata:rw
-      # do not uncomment this when starting a new instance from scratch as
-      # init script won't be able to move this file
-      #- ./LocalSettings.php:/var/www/html/LocalSettings.php
     environment:
-      - MOODLE_DB_TYPE=mariadb
+      - MOODLE_DB_TYPE=pgsql
       - MOODLE_DB_HOST=db
-      #- MOODLE_DB_PORT=
+      - MOODLE_DB_PORT=5432
       - MOODLE_DB_NAME=moodle
       - MOODLE_DB_USER=moodle
       - MOODLE_DB_PASSWORD=password
@@ -44,7 +36,7 @@ services:
       #- MOODLE_ADMIN_PASS=
       #- MOODLE_ADMIN_EMAIL=
       #- MOODLE_UPDATE=
-      #- MOODLE_REVERSE_PROXY=false
+      - MOODLE_REVERSE_PROXY=true
       #- MOODLE_SSL_PROXY=false
       - MOODLE_REDIS_HOST=redis
       - MOODLE_REDIS_PORT=6379
@@ -59,7 +51,7 @@ services:
       #- SMTP_AUTH_TYPE=PLAIN
       #- MOODLE_NOREPLY_ADDRESS=test@example.com
   redis:
-    image: redis:5.0-alpine
+    image: redis:6-alpine
     volumes:
       - ./.data/redis:/data
     ports:

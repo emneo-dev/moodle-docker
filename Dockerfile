@@ -27,7 +27,7 @@ ENV PHP_MAX_INPUT_VARS=6000
 #   xml
 #   json
 RUN apk update --no-cache \
-    && apk add --no-cache nginx supervisor \
+    && apk add --no-cache nginx supervisor libxml2 libzip libpng icu libpq graphviz \
     && apk add --no-cache libxml2-dev libzip-dev libpng-dev icu-dev libpq-dev --virtual .build-deps \
     && docker-php-ext-install -j$(nproc) \
         soap \
@@ -35,6 +35,11 @@ RUN apk update --no-cache \
         gd \
         intl \
         pgsql \
+        exif \
+    && apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del --no-network .phpize-deps \
     && apk del --no-network .build-deps
 
 RUN curl -L https://github.com/moodle/moodle/archive/v${MOODLE_VERSION}.tar.gz | tar xz --strip=1 \
@@ -52,8 +57,12 @@ COPY config/nginx.conf /etc/nginx/nginx.conf
 COPY config/conf.d /etc/nginx/conf.d/
 
 # Configure php-fpm
-COPY config/fpm-pool.conf ${PHP_INI_DIR}/php-fpm.d/www.conf
+COPY config/fpm-pool.conf /usr/local/etc/php-fpm.d/zzzzz-www.conf
 COPY config/php.ini ${PHP_INI_DIR}/conf.d/custom.ini
+
+# Configure supervisord
+# TODO: Get rid of supervisor -> Too much added to the image
+COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 80
 
