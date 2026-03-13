@@ -27,7 +27,7 @@ ENV PHP_MAX_INPUT_VARS=6000
 #   xml
 #   json
 RUN apk update --no-cache \
-    && apk add --no-cache nginx supervisor libxml2 libzip libpng icu libpq graphviz \
+    && apk add --no-cache nginx libxml2 libzip libpng icu libpq \
     && apk add --no-cache libxml2-dev libzip-dev libpng-dev icu-dev libpq-dev --virtual .build-deps \
     && docker-php-ext-install -j$(nproc) \
         soap \
@@ -60,15 +60,10 @@ COPY config/conf.d /etc/nginx/conf.d/
 COPY config/fpm-pool.conf /usr/local/etc/php-fpm.d/zzzzz-www.conf
 COPY config/php.ini ${PHP_INI_DIR}/conf.d/custom.ini
 
-# Configure supervisord
-# TODO: Get rid of supervisor -> Too much added to the image
-COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
 EXPOSE 80
 
-# Let supervisord start nginx & php-fpm
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/bin/ash", "-c", "php-fpm & nginx -g 'daemon off;'"]
 
 # Configure a healthcheck to validate that everything is up&running
 HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1/fpm-ping || exit 1
