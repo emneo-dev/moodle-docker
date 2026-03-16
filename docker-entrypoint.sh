@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -ex
+set -e
 
 : ${MOODLE_SITE_FULLNAME:=Moodle}
 : ${MOODLE_SITE_SHORTNAME:=Moodle}
@@ -14,33 +14,29 @@ set -ex
 
 if [ -z "$MOODLE_DB_HOST" ]; then
 	echo >&2 'error: missing MOODLE_DB_HOST environment variable'
-	echo >&2 '	Did you forget to --link your database?'
 	exit 1
 fi
 
 if [ -z "$MOODLE_DB_USER" ]; then
-	echo >&2 'error: missing required MOODLE_DB_USER environment variable'
+	echo >&2 'error: missing MOODLE_DB_USER environment variable'
 	exit 1
 fi
 
 if [ -z "$MOODLE_DB_PASSWORD" ]; then
-	echo >&2 'error: missing required MOODLE_DB_PASSWORD environment variable'
-	echo >&2 '	Did you forget to -e MOODLE_DB_PASSWORD=... ?'
-	echo >&2
-	echo >&2 '	(Also of interest might be MOODLE_DB_USER and MOODLE_DB_NAME)'
+	echo >&2 'error: missing MOODLE_DB_PASSWORD environment variable'
 	exit 1
 fi
 
 : ${MOODLE_DB_NAME:=moodle}
 
 if [ -z "$MOODLE_DB_PORT" ]; then
-	echo >&2 'error: missing required MOODLE_DB_PORT environment variable'
+	echo >&2 'error: missing MOODLE_DB_PORT environment variable'
 	exit 1
 fi
 
 # Wait for the DB to come up
 while [ `nc -w 1 $MOODLE_DB_HOST $MOODLE_DB_PORT < /dev/null > /dev/null; echo $?` != 0 ]; do
-    echo "Waiting for $MOODLE_DB_TYPE database to come up at $MOODLE_DB_HOST:$MOODLE_DB_PORT..."
+    echo "Waiting for database to come up..."
     sleep 1
 done
 echo "Database is up and running."
