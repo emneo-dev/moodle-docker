@@ -38,3 +38,7 @@ Here are the packages added on top of the base php-fpm image to make this work:
 - libpng -> Needed for PHP's gd extension
 - icu -> Needed for PHP's intl extension
 - libpq -> Needed for PHP's pgsql extension
+
+## Setting up Redis as the cache store
+
+Follow this tutorial: <https://docs.moodle.org/401/en/Redis_cache_store>
