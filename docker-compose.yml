@@ -31,7 +31,7 @@ services:
       - MOODLE_URL=http://localhost:8080
       #- MOODLE_SITE_FULLNAME=
       #- MOODLE_SITE_SHORTNAME=
-      #- MOODLE_SITE_LANG=
+      - MOODLE_SITE_LANG=fr
       #- MOODLE_ADMIN_USER=
       #- MOODLE_ADMIN_PASS=
       #- MOODLE_ADMIN_EMAIL=
