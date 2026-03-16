@@ -3,9 +3,9 @@
 Specialized Docker image made to run docker with PostgreSQL and Redis.
 nginx and php-fpm are included in the same image to run the whole application.
 
-Moodle: 4.1.22
-Alpine: 3.21
-PHP: 8.1
+- Moodle: 4.1.22
+- Alpine: 3.21
+- PHP: 8.1
 
 ## PHP extensions
 
